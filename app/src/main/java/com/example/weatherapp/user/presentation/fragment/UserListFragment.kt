@@ -1,17 +1,16 @@
 package com.example.weatherapp.user.presentation.fragment
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.weatherapp.R
 import com.example.weatherapp.auth.domain.model.User
 import com.example.weatherapp.auth.presentation.fragment.LoginFragment
-import com.example.weatherapp.auth.presentation.fragment.LoginFragmentDirections
 import com.example.weatherapp.auth.presentation.viewmodel.AuthViewModel
 import com.example.weatherapp.databinding.FragmentUserListBinding
 import com.example.weatherapp.user.presentation.adapter.UserListAdapter
@@ -19,7 +18,6 @@ import com.example.weatherapp.user.presentation.adapter.UserListAdapterListener
 import com.example.weatherapp.utils.network.Resource
 import com.example.weatherapp.utils.network.UiUtils
 import com.example.weatherapp.utils.network.UiUtils.showToast
-import com.example.weatherapp.weather.presentation.fragment.WeatherFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -139,6 +137,22 @@ class UserListFragment : Fragment(), UserListAdapterListener {
     }
 
     override fun onDelete(user: User) {
-        authViewModel.deleteUser(user)
+        showDeleteAlert(user)
+    }
+
+    private fun showDeleteAlert(user: User) {
+        val dialogFragment: DialogFragment = DeleteDialogFragment(
+            object : DeleteDialogListener {
+                override fun onDelete() {
+                    authViewModel.deleteUser(user)
+                }
+            }
+        )
+        dialogFragment.show(childFragmentManager, "DeleteDialogFragment")
+
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

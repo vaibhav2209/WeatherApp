@@ -139,4 +139,9 @@ class LoginFragment : Fragment() {
             binding.progress.visibility = View.GONE
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
 }

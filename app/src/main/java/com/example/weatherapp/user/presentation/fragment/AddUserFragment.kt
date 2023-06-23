@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.weatherapp.R
+import com.example.weatherapp.app.SharedPreferenceManager
 import com.example.weatherapp.auth.domain.model.User
 import com.example.weatherapp.auth.presentation.viewmodel.AuthViewModel
 import com.example.weatherapp.databinding.FragmentAddUserBinding
@@ -17,6 +18,7 @@ import com.example.weatherapp.utils.network.TextUtils.isValidEmail
 import com.example.weatherapp.utils.network.UiUtils.showToast
 import com.example.weatherapp.weather.presentation.fragment.WeatherFragmentArgs
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddUserFragment : Fragment() {
@@ -29,6 +31,9 @@ class AddUserFragment : Fragment() {
     private val args: AddUserFragmentArgs by navArgs()
 
     private var from: String =  ""
+
+    @Inject
+    lateinit var preferenceManager: SharedPreferenceManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,9 +77,12 @@ class AddUserFragment : Fragment() {
                         )
                     )
 
+                    requireActivity().showToast("User created")
+
                     if (from == UserListFragment.TAG) {
                         findNavController().popBackStack()
                     } else {
+                        preferenceManager.putBoolean(SharedPreferenceManager.IS_LOGGED_IN, true)
                         findNavController().navigate(R.id.action_addUserFragment_to_userListFragment)
                     }
 
@@ -118,6 +126,11 @@ class AddUserFragment : Fragment() {
 
     private fun addUser(user: User) {
         authViewModel.addUser(user)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }
